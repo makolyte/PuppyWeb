@@ -1,0 +1,13 @@
+Udacity objectives
+Take a moment to plan out the user experience for your website. Use all of the skills you learned in lessons 3 and 4 to
+ iteratively create a functioning Flask web application that works with your database of puppies.
+Think of all of the navigation use cases for your site. Create page mockups and then design a
+web application that facilitates this process.
+
+1. All CRUD operations on Puppies, Shelters, and Owners
+2. Switching or Balancing Shelter Population and Protecting against overflows
+3. Viewing a Puppy Profile
+4. Adopting a New Puppy
+5. Creating and Styling Templates (optionally with Bootstrap)
+6. Adding Flash Messages
+BONUS: Pagination
