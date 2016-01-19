@@ -1,0 +1,89 @@
+Ok, so i'm going to break the Problem Statement down into concrete tasks
+PROBLEM STATEMENT
+Main objective: Design a website that allows people to adopt puppies from shelters
+
+Udacity objectives to achieve
+1. All CRUD operations on Puppies, Shelters, and Owners
+2. Switching or Balancing Shelter Population and Protecting against overflows
+3. Viewing a Puppy Profile
+4. Adopting a New Puppy
+5. Creating and Styling Templates (optionally with Bootstrap)
+6. Adding Flash Messages
+BONUS: Pagination
+
+PAGES
+Shelters
+--minimize scope by removing shelter "capacity"
+
+1. CREATE - Page with form for creating a shelter record
+   /shelter/create
+
+2. READ
+    a. A page that lists all shelters
+    /shelters
+    b. A page that shows a specific shelter's profile
+    /shelter/shelter_id
+3. UPDATE
+    a. A form that allows you to edit the shelter info
+    /shelter/shelter_id/edit
+4. DELETE
+    /shelter/shelter_id/delete -- does this really need to be its own page?
+
+
+Puppies
+Because these are contained by shelters, all specific
+puppy actions are within the context of a shelter, therefore
+the url will contain shelter + puppy
+
+1. CREATE - Page with a form for all puppy fields, including shelter.
+   /shelter/shelter_id/puppy/create
+2. READ -
+    a. Page that lists puppies for a shelter or all puppies.
+    Show puppy pic, name, and a link to the puppy profile
+    b. Puppy Profile shows a specific puppy
+    links to edit/delete. There's no access control to these, because this is a
+    practice site.
+
+    /puppies = all puppies
+    /shelter/shelter_id/puppies = puppies for a shelter
+    /shelter/shelter_id/puppy/puppy_id = puppy profile
+
+3. UPDATE - Edit the info for a puppy record
+   /shelter/shelter_id/puppy/puppy_id/edit
+4. DELETE - Delete an existing puppy record
+    /shelter/shelter_id/puppy/puppy_id/delete
+
+
+
+Owners
+This will be simple. When you adopt a puppy, it will have a form for you to fill
+out owner info
+1. ADOPTION - A form for confirming adoption and entering your name/address
+    /shelter/shelter_id/puppy/puppy_id/adopt
+    a. Create the owner record
+    b. Update the puppy record, setting Shelter_ID=null and owner_id = owner
+
+
+STYLE
+Use bootstrap and create a grid layout.
+
+
+
+RELATIONSHIPS
+Puppies belong to either a Shelter or an Owner
+Shelters contain multiple Puppies
+Owners contain multiple Puppies
+
+
+CONCRETE TASKS
+TODO Create Owner database class
+TODO Link puppy to owner via owner_id
+TODO Remove Shelter.capacity field
+TODO Load sample data for testing purposes
+TODO Get bootstrap
+TODO Shelter All, One, EDIT, DELETE, CREATE
+TODO Puppy All, All for shelter, one, edit, delete, create
+TODO Owner Adoption page
+
+
+
