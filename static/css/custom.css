@@ -1,0 +1,14 @@
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+* {
+    border-top-color: red;
+    border-right-color: red;
+    border-left-color: red;
+    border-bottom-color: red;
+}

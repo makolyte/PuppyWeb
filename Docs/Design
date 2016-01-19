@@ -76,11 +76,7 @@ Owners contain multiple Puppies
 
 
 CONCRETE TASKS
-TODO Create Owner database class
-TODO Link puppy to owner via owner_id
-TODO Remove Shelter.capacity field
 TODO Load sample data for testing purposes
-TODO Get bootstrap
 TODO Shelter All, One, EDIT, DELETE, CREATE
 TODO Puppy All, All for shelter, one, edit, delete, create
 TODO Owner Adoption page
