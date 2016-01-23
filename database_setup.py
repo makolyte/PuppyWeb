@@ -31,7 +31,7 @@ class Puppy(Base):
     gender = Column(String(6), nullable = False)
     dateOfBirth = Column(Date)
     pictureURL = Column(String)
-    weight = Column(Numeric(10))
+    weight = Column(Numeric(10, 2))
     breed = Column(String(15))
     description = Column(String(250))
     shelter_id = Column(Integer, ForeignKey('shelter.id'))
@@ -48,7 +48,7 @@ def CreateDB():
     Base.metadata.create_all(engine)
 
 
-def LoadData():
+def AddABunchOfFakePuppies():
     engine = create_engine('sqlite:///puppyweb.db')
 
     Base.metadata.bind = engine
@@ -148,7 +148,7 @@ def DeleteAllPuppies():
 
 def ResetData():
     DeleteAllPuppies()
-    LoadData()
+    AddABunchOfFakePuppies()
 
 
 
