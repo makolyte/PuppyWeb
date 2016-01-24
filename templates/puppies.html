@@ -1,50 +1,10 @@
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    {% include "header.html" %}
-
-  </head>
-
-  <body>
-
-    {% include "navbar.html" %}
-
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-            <a href="{{url_for('createPuppy')}}" role="button" class="btn btn-success">Create new puppy</a>
-          </div>
-      </div>
-
-      {% for row in puppies | batch(3)%}
-
-     <div class="row">
-       {% for puppy in row %}
-          {% if puppy %}
-           <div class="col-md-4">
-             <a href="{{url_for('puppy', puppy_id=puppy.id)}}">
-             <img class="img-responsive" src='{{url_for('static', filename=puppy.pictureURL)}}' alt="pic of {{puppy.name}}" />
+{% include "shared/header.html" %}
 
 
-             {{puppy.name}}</a><br>
-             DOB: {{puppy.dateOfBirth}}<br>
-             Weight: {{puppy.weight}}<br>
-             <a role="button" class="btn btn-primary" href="{{url_for('puppyOperation',operation='edit', puppy_id=puppy.id)}}">Edit</a>
-             <a role="button" class="btn btn-danger" href="{{url_for('puppyOperation', operation='delete',puppy_id=puppy.id)}}">Delete</a>
-             <a role="button" class="btn btn-warning" href="{{url_for('puppyOperation', operation='adopt', puppy_id=puppy.id)}}">Adopt</a>
-           </div>
-          {% endif %}
-        {%endfor%} <!--inner loop for columns-->
-       </div>
-      {%endfor%}<!--outer loop for batching-->
-
-     </div>
-
-    </div><!-- /.container -->
-
-  {% include "javascript_includes.html" %}
+    {% with puppies=puppies %}
+        {% include "shared/puppy_list.html" %}
+    {% endwith %}
 
 
-  </body>
-</html>
+{% include "shared/footer.html" %}

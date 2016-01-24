@@ -152,4 +152,13 @@ def ResetData():
 
 
 
+def GetSession():
+    engine = create_engine('sqlite:///puppyweb.db')
 
+    Base.metadata.bind = engine
+
+    DBSession = sessionmaker(bind=engine)
+
+    session = DBSession()
+
+    return session

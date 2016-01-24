@@ -1,6 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 from database_setup import Base, Puppy, Shelter, Owner, create_engine
 from sqlalchemy.orm import sessionmaker
+import random
 
 
 engine = create_engine("sqlite:///puppyweb.db")
@@ -17,23 +18,53 @@ def shelters():
 
 @app.route("/shelter/<int:shelter_id>")
 def shelter(shelter_id):
-    #TODO - Create shelter profile
-    return "TODO - Create shelter profile"
+    shelter = session.query(Shelter).filter(Shelter.id == shelter_id).first()
+    puppies = session.query(Puppy).filter(Puppy.shelter_id == shelter_id)
+    return render_template("shelter.html", shelter = shelter, puppies=puppies)
 
 @app.route("/shelter/<int:shelter_id>/edit", methods=("GET", "POST"))
 def editShelter(shelter_id):
-    #TODO - Create edit
-    return "TODO - Create edit"
+    #I'm not putting error handling in here. This would obviously need to chekc if the shelter exists, and redirect to an error page or something
+    shelter = session.query(Shelter).filter(Shelter.id == shelter_id).first()
+    if request.method == "GET":
+        return render_template("edit_shelter.html", shelter=shelter)
+    else:
+        shelter.name = request.form["shelterName"]
+        shelter.city = request.form["shelterCity"]
+        session.commit()
+        return redirect(url_for("shelter", shelter_id=shelter_id))
+        #TODO flash success message
 
-@app.route("/shelter/<int:shelter_id>/delete", methods=("GET", "POST"))
+@app.route("/shelter/<int:shelter_id>/delete")
 def deleteShelter(shelter_id):
-    #TODO - Create delete
-    return "TODO - Create delete"
+    #first, move the puppies randomly amongst the other shelters
+    #note: this ignores the fact that there could be 0 shelters
 
-@app.route("/createShelter")
+    allOtherShelters = session.query(Shelter).filter(Shelter.id != shelter_id).all()
+
+    puppies = session.query(Puppy).filter(Puppy.shelter_id==shelter_id).all()
+    for puppy in puppies:
+        puppy.shelter_id = random.choice(allOtherShelters).id
+
+    shelter = session.query(Shelter).filter(Shelter.id == shelter_id).first()
+    session.delete(shelter)
+    session.commit()
+    return redirect(url_for("shelters"))
+    #TODO - flash success message
+
+@app.route("/createShelter", methods=("GET", "POST"))
 def createShelter():
-    #TODO: Create shelter
-    return "TODO-Create shelter"
+    if request.method == "GET":
+        return render_template("create_shelter.html")
+    else:
+        #Validation would be done on the client-side with JS, which i'm not going to do in this project
+        newShelter = Shelter()
+        newShelter.name = request.form["shelterName"]
+        newShelter.city = request.form["shelterCity"]
+        session.add(newShelter)
+        session.commit()
+        return redirect(url_for("shelters"))
+        #TODO flash success message
 
 @app.route("/")
 @app.route("/puppies")

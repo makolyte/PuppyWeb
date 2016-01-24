@@ -1,1 +1,22 @@
-TODO shelter profile
+
+{% include "shared/header.html" %}
+
+
+<div class="row">
+{% with showLink=False %}
+    {% include "shared/shelter_info.html" %}
+{% endwith %}
+</div>
+    <hr>
+          <div class="row">
+        <div class="col-md-12">
+            <a href="{{url_for('createPuppy')}}" role="button" class="btn btn-success">Create new puppy</a>
+          </div>
+      </div>
+
+
+{% with puppies=puppies %}
+    {% include "shared/puppy_list.html" %}
+{% endwith %}
+
+{% include "shared/footer.html" %}

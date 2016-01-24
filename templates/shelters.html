@@ -1,32 +1,20 @@
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    {% include "header.html" %}
+    {% include "shared/header.html" %}
 
-  </head>
-
-  <body>
-
-    {% include "navbar.html" %}
-
-    <div class="container">
     <div class="row">
         <div class="col-md-12">
             <a href="{{url_for('createShelter')}}" role="button" class="btn btn-success">Create new shelter</a>
             </div>
         </div>
 
+
       {% for row in shelters | batch(2)%}
      <div class="row">
        {% for shelter in row %}
           {% if shelter %}
-           <div class="col-md-6">
-               <strong><a href="{{url_for('shelter', shelter_id=shelter.id)}}">{{shelter.name}}</a></strong><br>
-             in {{shelter.city}}<br>
-               <a role="button" class="btn btn-primary" href="{{url_for('editShelter', shelter_id=shelter.id)}}">Edit</a>
-               <a role="button" class="btn btn-danger" href="{{url_for('deleteShelter', shelter_id=shelter.id)}}">Delete</a>
-           </div>
+            {% with showLink=True %}
+                {% include "shared/shelter_info.html" %}
+            {% endwith %}
           {% endif %}
         {%endfor%} <!--inner loop for columns-->
        </div>
@@ -34,10 +22,6 @@
 
      </div>
 
-    </div><!-- /.container -->
 
-  {% include "javascript_includes.html" %}
+  {% include "shared/footer.html" %}
 
-
-  </body>
-</html>
