@@ -1,0 +1,9 @@
+{% include "shared/header.html" %}
+
+<div class="row">
+    {% with puppy=puppy, mode="CREATE" %}
+        {% include "shared/puppy_form.html" %}
+    {% endwith %}
+</div>
+
+{% include "shared/footer.html" %}

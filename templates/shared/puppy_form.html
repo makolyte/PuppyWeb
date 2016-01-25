@@ -1,0 +1,129 @@
+
+<!--TODO show puppy pic and upload new ones
+<div class="row">
+        {% include "shared/puppy_pic.html" %}
+
+        <button></button>
+        </div>
+    </div>
+
+<hr>
+-->
+{% if  mode.upper() == "EDIT" %}
+
+        <form class="form-horizontal" method="POST" action="{{url_for('puppyOperation', operation='EDIT', puppy_id=puppy.id)}}">
+
+        <legend>Edit puppy</legend>
+
+    {% else %}
+         <form class="form-horizontal" method="POST" action="{{url_for('createPuppy', shelter_id=shelter_id)}}">
+
+                <legend>Create puppy</legend>
+    {% endif %}
+
+    <input type="hidden" name="puppyPicURL" value=
+    {% if puppy  %}
+        "{{puppy.pictureURL}}"
+             {% else %}
+             ""
+    {% endif %}
+    >
+
+    <div class="form-group row">
+
+
+
+        <div class="col-sm-11">
+            <label for="puppyName">Name</label>
+            <input id="puppyName" type="text" class="form-control" name="puppyName"
+                   {% if mode.upper() == "EDIT" %}
+                        value="{{puppy.name}}" placeholder="{{puppy.name}}">
+                    {% else %}
+                        value="" placeholder="Puppy name">
+                    {% endif %}
+
+
+        </div>
+    </div>
+
+
+             <div class="form-group row">
+
+        <div class="col-sm-11">
+            <label for="puppyName">Description</label>
+            <input id="puppyDescription" type="text" class="form-control" name="puppyDescription"
+                   {% if mode.upper() == "EDIT" %}
+                        value="{{puppy.description}}" placeholder="{{puppy.description}}">
+                    {% else %}
+                        value="" placeholder="Puppy description">
+                    {% endif %}
+
+
+        </div>
+    </div>
+
+                 <div class="form-group row">
+
+        <div class="col-sm-11">
+            <label for="puppyGender">Gender</label>
+            <input id="puppyGender" type="text" class="form-control" name="puppyGender"
+                   {% if mode.upper() == "EDIT" %}
+                        value="{{puppy.gender}}" placeholder="{{puppy.gender}}">
+                    {% else %}
+                        value="" placeholder="Puppy gender">
+                    {% endif %}
+
+
+        </div>
+    </div>
+
+              <div class="form-group row">
+
+        <div class="col-sm-11">
+            <label for="puppyDOB">Date of birth</label>
+            <input id="puppyDOB" type="date" class="form-control" name="puppyDOB"
+                   {% if mode.upper() == "EDIT" %}
+                        value="{{puppy.dateOfBirth}}" placeholder="{{puppy.dateOfBirth}}">
+                    {% else %}
+                        value="" placeholder="Puppy DOB">
+                    {% endif %}
+
+
+        </div>
+    </div>
+
+                 <div class="form-group row">
+
+        <div class="col-sm-11">
+            <label for="puppyWeight">Weight</label>
+            <input id="puppyWeight" type="number" step="any" class="form-control" name="puppyWeight"
+                   {% if mode.upper() == "EDIT" %}
+                        value="{{puppy.weight}}" placeholder="{{puppy.weight}}">
+                    {% else %}
+                        value="" placeholder="Puppy weight">
+                    {% endif %}
+
+
+        </div>
+    </div>
+
+                 <div class="form-group row">
+
+        <div class="col-sm-11">
+            <label for="puppyBreed">Breed</label>
+            <input id="puppyBreed" type="text" class="form-control" name="puppyBreed"
+                   {% if mode.upper() == "EDIT" %}
+                        value="{{puppy.breed}}" placeholder="{{puppy.breed}}">
+                    {% else %}
+                        value="" placeholder="Puppy breed">
+                    {% endif %}
+
+
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-offset-1 col-sm-11">
+          <button type="submit" class="btn btn-success">Save</button>
+        </div>
+    </div>
+</form>

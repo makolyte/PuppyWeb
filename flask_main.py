@@ -2,7 +2,12 @@ from flask import Flask, render_template, request, redirect, url_for
 from database_setup import Base, Puppy, Shelter, Owner, create_engine
 from sqlalchemy.orm import sessionmaker
 import random
+from datetime import date, datetime
 
+import os
+
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 engine = create_engine("sqlite:///puppyweb.db")
 Base.metadata.bind = engine
@@ -10,6 +15,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route("/shelters")
 def shelters():
@@ -33,7 +39,6 @@ def editShelter(shelter_id):
         shelter.city = request.form["shelterCity"]
         session.commit()
         return redirect(url_for("shelter", shelter_id=shelter_id))
-        #TODO flash success message
 
 @app.route("/shelter/<int:shelter_id>/delete")
 def deleteShelter(shelter_id):
@@ -50,7 +55,6 @@ def deleteShelter(shelter_id):
     session.delete(shelter)
     session.commit()
     return redirect(url_for("shelters"))
-    #TODO - flash success message
 
 @app.route("/createShelter", methods=("GET", "POST"))
 def createShelter():
@@ -64,7 +68,6 @@ def createShelter():
         session.add(newShelter)
         session.commit()
         return redirect(url_for("shelters"))
-        #TODO flash success message
 
 @app.route("/")
 @app.route("/puppies")
@@ -74,20 +77,85 @@ def homepage():
 
 @app.route("/puppy/<int:puppy_id>")
 def puppy(puppy_id):
-    #TODO: Create puppy profile
-    return "TODO Create puppy profile"
+    pup = session.query(Puppy).filter(Puppy.id == puppy_id).first()
+    shelter = session.query(Shelter).filter(Shelter.id == pup.shelter_id).first()
+    return render_template("puppy.html", puppy=pup, shelter=shelter)
 
-@app.route("/puppy/<string:operation>/<int:puppy_id>")
+@app.route("/puppy/<string:operation>/<int:puppy_id>", methods=("GET", "POST"))
 def puppyOperation(operation, puppy_id): #i'm trying out this style of routing, combining multiple operations instead of having a separate create for each operation (like for shelters)
     #TODO - Create puppy delete page
-    #TODO - Create puppy edit page
     #TODO - Create puppy adopt page
-    return "operation={0} puppy_id={1}".format(operation, puppy_id)
+    pup = session.query(Puppy).filter(Puppy.id == puppy_id).first()
+    if operation.upper() == "EDIT":
+        if request.method == "GET":
+            return render_template("edit_puppy.html", puppy=pup)
+        else:
+            pup.breed = request.form["puppyBreed"]
+            #my sample data seems to be saved in a different format than when creating new records from the web
+            try:
+                pup.dateOfBirth =  datetime.strptime(request.form["puppyDOB"], "%Y-%d-%m")
+            except:
+                pup.dateOfBirth =  datetime.strptime(request.form["puppyDOB"], "%Y-%m-%d")
+            pup.description = request.form["puppyDescription"]
+            pup.gender = request.form["puppyGender"]
+            pup.name = request.form["puppyName"]
+            #pup.pictureURL = "";
+            session.commit()
+            return redirect(url_for("shelter", shelter_id=pup.shelter_id))
+    else:
+        return "Not done yet"
 
-@app.route("/createpuppy")
-def createPuppy():
-    #TODO - Create create puppy page
-    return "TODO - Create create puppy page"
+
+@app.route("/shelter/<int:shelter_id>/createpuppy", methods=("GET", "POST"))
+def createPuppy(shelter_id):
+    if request.method == "GET":
+        return render_template("create_puppy.html", shelter_id=shelter_id)
+    else:
+        """
+        I'm not going to handle uploading the picture at the same time as creating a
+        new puppy, because that would require:
+        1) Upload image
+        2) Associate the image with the puppy BEFORE saving
+        3) Save the puppy
+        I think i would need jQuery to be able to show the puppy image BEFORE saving
+        """
+        newPup = Puppy()
+        newPup.breed = request.form["puppyBreed"]
+        newPup.dateOfBirth =  datetime.strptime(request.form["puppyDOB"], "%Y-%d-%m")
+        newPup.description = request.form["puppyDescription"]
+        newPup.gender = request.form["puppyGender"]
+        newPup.name = request.form["puppyName"]
+        newPup.shelter_id = shelter_id
+        newPup.pictureURL = "";
+        session.add(newPup)
+        session.commit()
+        return redirect(url_for("shelter", shelter_id=shelter_id))
+
+
+#TODO Found this in the documentation. perhaps use this to upload image for the puppy
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+@app.route('/imageupload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = file.filename
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('upload_file',
+                                    filename=filename))
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form action="" method=post enctype=multipart/form-data>
+      <p><input type=file name=file>
+         <input type=submit value=Upload>
+    </form>
+    '''
+#Debug
 
 if __name__ == '__main__':
     app.secret_key = "super secret key"

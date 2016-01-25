@@ -1,0 +1,7 @@
+<img class="img-responsive" src=
+                {% if puppy and puppy.pictureURL !="" %}
+                '{{url_for('static', filename=puppy.pictureURL)}}'
+                 {% else %}
+                   "http://placehold.it/300x300"
+                 {% endif %}
+                 alt="pup pic" />

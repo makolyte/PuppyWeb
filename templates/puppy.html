@@ -1,0 +1,46 @@
+{% include "shared/header.html" %}
+
+
+<div class="row">
+    <div class="col-md-4">
+        {% include "shared/puppy_pic.html" %} <br>
+        {% include "shared/puppy_buttons.html" %}
+    </div>
+
+    <div class="col-md-8">
+        <div class="row">
+            <h1>{{puppy.name}}</h1>
+            <br>
+            <p>{{puppy.description}}</p>
+        </div>
+        <div class="row">
+            <table class="table table-striped table-bordered">
+                <tr>
+                    <td>Shelter</td>
+                    <td><a href="{{url_for('shelter', shelter_id=shelter.id)}}">{{shelter.name}}</a></td>
+                </tr>
+                <tr>
+                    <td>Gender</td>
+                    <td>{{puppy.gender}}</td>
+                </tr>
+                <tr>
+                    <td>DOB</td>
+                    <td>{{puppy.dateOfBirth}}</td>
+                </tr>
+                <tr>
+                    <td>Weight</td>
+                    <td>{{puppy.weight}}</td>
+                </tr>
+                <tr>
+                    <td>Breed</td>
+                    <td>{{puppy.breed}}</td>
+                </tr>
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% include "shared/footer.html" %}
