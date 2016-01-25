@@ -1,0 +1,40 @@
+{% if  mode.upper() == "EDIT" %}
+
+        <form class="form-horizontal" method="POST" action="{{url_for('editShelter', shelter_id=shelter.id)}}">
+
+        <legend>Edit shelter</legend>
+
+    {% else %}
+         <form class="form-horizontal" method="POST" action="{{url_for('createShelter')}}">
+
+                <legend>Create shelter</legend>
+    {% endif %}
+
+    <div class="form-group row">
+        <label for="shelterName" class="col-sm-1 form-control-label">Name</label>
+        <div class="col-sm-11">
+            <input id="shelterName" type="text" class="form-control" name="shelterName"
+                   {% if mode.upper() == "EDIT" %}
+                        value="{{shelter.name}}" placeholder="{{shelter.name}}">
+                    {% else %}
+                        value="" placeholder="Shelter name">
+                    {% endif %}
+         </div>
+    </div> <!-- end form group row -->
+     <div class="form-group row">
+        <label for="shelterCity" class="col-sm-1 form-control-label">City</label>
+        <div class="col-sm-11">
+            <input id="shelterCity" type="text" class="form-control" name="shelterCity"
+                   {% if mode.upper() == "EDIT" %}
+                        value="{{shelter.city}}" placeholder="{{shelter.city}}">
+                    {% else %}
+                        value="" placeholder="Shelter city">
+                    {% endif %}
+         </div>
+    </div> <!-- end form group row -->
+    <div class="form-group row">
+        <div class="col-sm-offset-1 col-sm-11">
+          <button type="submit" class="btn btn-success">Save</button>
+        </div>
+    </div>
+</form>

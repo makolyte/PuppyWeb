@@ -1,0 +1,22 @@
+<div class="col-md-6">
+   <strong>
+       {% if showLink %}
+           <a href="{{url_for('shelter', shelter_id=shelter.id)}}">{{shelter.name}}</a>
+       {% else %}
+            {{shelter.name}}
+       {% endif %}
+   </strong><br>
+ in {{shelter.city}}<br>
+   <a role="button" class="btn btn-primary" href="{{url_for('editShelter', shelter_id=shelter.id)}}">Edit</a>
+
+    <!-- Note: This is generating a modal block of code for every shelter.
+     Ideally I'd use one modal block, and dynamically build the deletionLink based on
+     which shelter's Delete button was clicked. That would require jQuery,
+     and I don't want to use that in this project since I haven't learned it yet-->
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal{{shelter.id}}">Delete</button>
+
+    {% with deletionLink=url_for('deleteShelter', shelter_id=shelter.id), entityID=shelter.id%}
+        {%include "shared/confirm_modal.html" %}
+    {% endwith %}
+
+</div>
