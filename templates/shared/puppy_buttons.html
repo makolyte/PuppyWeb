@@ -1,3 +1,16 @@
  <a role="button" class="btn btn-primary" href="{{url_for('puppyOperation',operation='edit', puppy_id=puppy.id)}}">Edit</a>
- <a role="button" class="btn btn-danger" href="{{url_for('puppyOperation', operation='delete',puppy_id=puppy.id)}}">Delete</a>
- <a role="button" class="btn btn-warning" href="{{url_for('puppyOperation', operation='adopt', puppy_id=puppy.id)}}">Adopt</a>
+ <button role="button" class="btn btn-danger"  data-toggle="modal" data-target="#confirmDeleteModalpuppy{{puppy.id}}">Delete</button>
+ <button role="button" class="btn btn-warning" data-toggle="modal" data-target="#confirmAdoption{{puppy.id}}">Adopt</button>
+
+ <!-- same thing as shelter delete modals. THeres one for each puppy. That's because i'm not using jQuery to
+ dynamically change stuff in this project -->
+  {% with deletionLink=url_for('puppyOperation', operation='delete', puppy_id=puppy.id), entityID="puppy"+puppy.id|string%}
+      {%include "shared/confirm_modal.html" %}
+  {% endwith %}
+
+ {% with puppyID = puppy.id %}
+   {% include "confirm_adopt_modal.html" %}
+
+ {% endwith %}
+
+

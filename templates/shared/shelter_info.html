@@ -13,9 +13,9 @@
      Ideally I'd use one modal block, and dynamically build the deletionLink based on
      which shelter's Delete button was clicked. That would require jQuery,
      and I don't want to use that in this project since I haven't learned it yet-->
-    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal{{shelter.id}}">Delete</button>
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModalshelter{{shelter.id}}">Delete</button>
 
-    {% with deletionLink=url_for('deleteShelter', shelter_id=shelter.id), entityID=shelter.id%}
+    {% with deletionLink=url_for('deleteShelter', shelter_id=shelter.id), entityID="shelter"+shelter.id|string%}
         {%include "shared/confirm_modal.html" %}
     {% endwith %}
 
