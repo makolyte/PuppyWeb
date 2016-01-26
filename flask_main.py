@@ -127,13 +127,15 @@ def createPuppy(shelter_id):
     else:
         newPup = Puppy()
         newPup.shelter_id = shelter_id
-        mapRequestToPuppy(request, puppy)
+        mapRequestToPuppy(request, newPup)
 
         session.add(newPup)
         session.commit()
         return redirect(url_for("shelter", shelter_id=shelter_id))
 
 def mapRequestToPuppy(request, puppy):
+    for key,value in request.form.items():
+        print "{0}:{1}".format(key, value)
     puppy.breed = request.form["puppyBreed"]
     puppy.dateOfBirth = parseDate(request.form["puppyDOB"])
     puppy.description = request.form["puppyDescription"]
