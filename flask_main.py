@@ -3,11 +3,14 @@ from database_setup import Base, Puppy, Shelter, Owner, create_engine
 from sqlalchemy.orm import sessionmaker
 import random
 from datetime import date, datetime
+import uuid
+
+
 
 import os
 
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+UPLOAD_FOLDER = 'static/images'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 engine = create_engine("sqlite:///puppyweb.db")
 Base.metadata.bind = engine
@@ -72,7 +75,7 @@ def createShelter():
 @app.route("/")
 @app.route("/puppies")
 def homepage():
-    puppies = session.query(Puppy).all()
+    puppies = session.query(Puppy).filter(Puppy.shelter_id != None).all()
     return render_template("puppies.html", puppies=puppies)
 
 @app.route("/puppy/<int:puppy_id>")
@@ -81,81 +84,79 @@ def puppy(puppy_id):
     shelter = session.query(Shelter).filter(Shelter.id == pup.shelter_id).first()
     return render_template("puppy.html", puppy=pup, shelter=shelter)
 
+def parseDate(dateStr):
+    #my sample data seems to be saved in a different format than when creating new records from the web
+    #just use a try catch, yes I know it's lazy but this is a udacity project!
+    try:
+        return datetime.strptime(dateStr, "%Y-%d-%m")
+    except:
+        return datetime.strptime(dateStr, "%Y-%m-%d")
+
 @app.route("/puppy/<string:operation>/<int:puppy_id>", methods=("GET", "POST"))
-def puppyOperation(operation, puppy_id): #i'm trying out this style of routing, combining multiple operations instead of having a separate create for each operation (like for shelters)
-    #TODO - Create puppy delete page
-    #TODO - Create puppy adopt page
+def puppyOperation(operation, puppy_id):
+    #i'm trying out this style of routing, combining multiple operations instead of having a separate create for each operation (like for shelters)
+
+    #ideally i would manage the images associated with the puppies
+    #such that Delete would delete the photo, and Edit would delete a photo if the original was switched out
+    #but I don't want to do that on this project
     pup = session.query(Puppy).filter(Puppy.id == puppy_id).first()
     if operation.upper() == "EDIT":
         if request.method == "GET":
             return render_template("edit_puppy.html", puppy=pup)
         else:
-            pup.breed = request.form["puppyBreed"]
-            #my sample data seems to be saved in a different format than when creating new records from the web
-            try:
-                pup.dateOfBirth =  datetime.strptime(request.form["puppyDOB"], "%Y-%d-%m")
-            except:
-                pup.dateOfBirth =  datetime.strptime(request.form["puppyDOB"], "%Y-%m-%d")
-            pup.description = request.form["puppyDescription"]
-            pup.gender = request.form["puppyGender"]
-            pup.name = request.form["puppyName"]
-            #pup.pictureURL = "";
+            mapRequestToPuppy(request, pup)
             session.commit()
             return redirect(url_for("shelter", shelter_id=pup.shelter_id))
-    else:
-        return "Not done yet"
-
+    elif operation.upper() == "DELETE":
+        session.delete(pup)
+        session.commit()
+        return redirect(request.referrer) #use referrer, because they could be coming from home page or shelter page
+    elif operation.upper() == "ADOPT":
+        pup.shelter_id = None;
+        owner = Owner()
+        owner.name = request.form["ownerName"]
+        session.add(owner)
+        pup.owner_id = owner.id
+        session.commit()
+        return redirect(request.referrer);
 
 @app.route("/shelter/<int:shelter_id>/createpuppy", methods=("GET", "POST"))
 def createPuppy(shelter_id):
     if request.method == "GET":
         return render_template("create_puppy.html", shelter_id=shelter_id)
     else:
-        """
-        I'm not going to handle uploading the picture at the same time as creating a
-        new puppy, because that would require:
-        1) Upload image
-        2) Associate the image with the puppy BEFORE saving
-        3) Save the puppy
-        I think i would need jQuery to be able to show the puppy image BEFORE saving
-        """
         newPup = Puppy()
-        newPup.breed = request.form["puppyBreed"]
-        newPup.dateOfBirth =  datetime.strptime(request.form["puppyDOB"], "%Y-%d-%m")
-        newPup.description = request.form["puppyDescription"]
-        newPup.gender = request.form["puppyGender"]
-        newPup.name = request.form["puppyName"]
         newPup.shelter_id = shelter_id
-        newPup.pictureURL = "";
+        mapRequestToPuppy(request, puppy)
+
         session.add(newPup)
         session.commit()
         return redirect(url_for("shelter", shelter_id=shelter_id))
 
+def mapRequestToPuppy(request, puppy):
+    puppy.breed = request.form["puppyBreed"]
+    puppy.dateOfBirth = parseDate(request.form["puppyDOB"])
+    puppy.description = request.form["puppyDescription"]
+    puppy.gender = request.form["puppyGender"]
+    puppy.name = request.form["puppyName"]
+    puppy.weight = request.form["puppyWeight"]
+    file = request.files['puppyPic']
 
-#TODO Found this in the documentation. perhaps use this to upload image for the puppy
+    if file and allowed_file(file.filename):
+        filename = "{0}.{1}".format(str(uuid.uuid4()), getFileExt(file.filename))
+        puppy.pictureURL = "images/{0}".format(filename)
+        print "Puppy URL = {0}".format(puppy.pictureURL)
+        file.save( os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    else:
+        print "Not saving puppy pic"
+
+def getFileExt(filename):
+    fileArr = filename.rsplit(".", 1)
+    return fileArr[1].lower()
+
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+    return '.' in filename and getFileExt(filename) in ALLOWED_EXTENSIONS
 
-@app.route('/imageupload', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = file.filename
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('upload_file',
-                                    filename=filename))
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form action="" method=post enctype=multipart/form-data>
-      <p><input type=file name=file>
-         <input type=submit value=Upload>
-    </form>
-    '''
-#Debug
 
 if __name__ == '__main__':
     app.secret_key = "super secret key"
