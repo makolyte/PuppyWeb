@@ -143,7 +143,7 @@ def mapRequestToPuppy(request, puppy):
     puppy.name = request.form["puppyName"]
     puppy.weight = request.form["puppyWeight"]
     file = request.files['puppyPic']
-
+#
     if file and allowed_file(file.filename):
         filename = "{0}.{1}".format(str(uuid.uuid4()), getFileExt(file.filename))
         puppy.pictureURL = "images/{0}".format(filename)

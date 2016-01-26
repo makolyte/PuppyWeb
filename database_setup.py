@@ -144,6 +144,16 @@ def DeleteAllPuppies():
     puppies = session.query(Puppy).all();
     for p in puppies:
         session.delete(p)
+
+    shelters = session.query(Shelter).all()
+    for s in shelters:
+        session.delete(s)
+
+    owners = session.query(Owner).all()
+    for o in owners:
+        session.delete()
+
+
     session.commit()
 
 def ResetData():
